@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "tontine-mobile",
-    "slug": "tontine-mobile",
+    "name": "eTontine",
+    "slug": "eTontine",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,6 +26,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a3021c87-450f-4f44-a94c-8edf8998cf39"
+      }
+    },
+    "owner": "joab77"
   }
 }
