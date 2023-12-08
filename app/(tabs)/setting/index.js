@@ -35,7 +35,7 @@ const SettingScreen = () => {
     const [isLoading, setIsLoading] = useState(false)
     const dispatch = useAppDispatch()
 
-    // const [logout] = useLogoutMutation()
+    const [logout] = useLogoutMutation()
 
     const signOut = () => {
         setIsLoading(true)
@@ -57,8 +57,8 @@ const SettingScreen = () => {
                 header: () => <Header title="Paramètre" />
             }} />
             <Block flex style={{ paddingHorizontal: 15 }}>
-                <Row onPress={() => handleRowPress('/setting/profile')} text="Profil" family="Ionicons" icon={"person"}/>
-                <Row onPress={() => handleRowPress('/setting/password')} text="Modifier mot de passe" family={"Entypo"} icon={"lock"}/>
+                {/*<Row onPress={() => handleRowPress('/setting/profile')} text="Profil" family="Ionicons" icon={"person"}/>*/}
+                {/*<Row onPress={() => handleRowPress('/setting/password')} text="Modifier mot de passe" family={"Entypo"} icon={"lock"}/>*/}
                 <Row onPress={() => handleRowPress('/setting/subscription')} text="Abonnement" family={"MaterialIcons"} icon={"subscriptions"}/>
                 <Row onPress={() => handleRowPress('/setting/about')} text="A Propos" family={"Entypo"} icon={"info"}/>
                 <Block center style={{ marginTop: 'auto' }} >

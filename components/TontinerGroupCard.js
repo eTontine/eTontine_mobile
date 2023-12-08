@@ -1,17 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, TouchableWithoutFeedback, Image } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 import {appTheme} from "../constants";
 import {useRouter} from "expo-router";
-import Icon from "./Icon";
-import {Button} from "./index";
+import Button from "./Button";
+import { GroupStatus} from "../constants/status";
+
 
 const JTontinerGroupCard = ({ onPressAdd, onPressStart, item, style, onPress }) => {
 
     const router = useRouter()
 
     const navigateTo = () => {
-        router.push({ pathname: '/tontine/group/[id]', params: { id: item.id } })
+        router.push({ pathname: '/group/show/[id]', params: { id: item.id, name: item.name } })
     }
     const cardContainer = [styles.card, styles.shadow, style]
 
@@ -34,7 +35,7 @@ const JTontinerGroupCard = ({ onPressAdd, onPressStart, item, style, onPress }) 
                           size={12}
                           bold style={{ marginVertical: 10, marginHorizontal: 5 }}
                       >
-                          {item?.status == 'INSCRIPTION' ? "Phase d'inscription" : item?.status}
+                          { GroupStatus[item?.status]?.name}
                       </Text>
                   </Block>
               </Block>
@@ -82,7 +83,7 @@ const JTontinerGroupCard = ({ onPressAdd, onPressStart, item, style, onPress }) 
                       style={{ paddingHorizontal: 5, paddingVertical: 7 }}
                   >
                       <Text bold size={10} color={appTheme.COLORS.WHITE}>
-                          VOir
+                          Voir
                       </Text>
                   </Button>
 

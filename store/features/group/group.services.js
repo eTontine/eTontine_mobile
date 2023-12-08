@@ -1,10 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import {setMessage} from "../alert/alert.slice";
 import {baseQueryWithInterceptor} from "../../../utils/fetch";
-import { localStorage } from "../../../utils/localStorage";
 import {setGroupes, setCurrentGroup, setRules} from "./group.slice";
-import {setCredentials} from "../auth/auth.slice";
-import {setUser} from "../user/user.slice";
 
 export const groupApi = createApi({
     reducerPath: "groupApi",
@@ -12,8 +9,23 @@ export const groupApi = createApi({
     tagTypes: ['Groupes'],
     endpoints: (builder) => ({
         getGroupes: builder.query({
-            query: ({tontinier,search,page, user, limit}) =>({
-                url: `get-associate-groupes?tontinier=${tontinier}&user=${user}&limit=${limit}&page=${page}`,
+            query: ({tontinier,search, user, limit, start_date, end_date}) =>({
+                url: `get-associate-groupes?tontinier=${tontinier}&user=${user}&limit=${limit}&search=${search}&start_date=${start_date}&end_date=${end_date}`,
+            }),
+            providesTags: ['Groupes'],
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    console.log("getGroupes")
+                    const { data } = await queryFulfilled;
+                } catch ({error}) {
+                    console.log("getGroupes error", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
+        getNextGroupes: builder.query({
+            query: ({tontinier,search, user, limit, page, start_date, end_date}) =>({
+                url: `get-associate-groupes?tontinier=${tontinier}&user=${user}&limit=${limit}&search=${search}&page=${page}&start_date=${start_date}&end_date=${end_date}`,
             }),
             providesTags: ['Groupes'],
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -34,7 +46,7 @@ export const groupApi = createApi({
                 try {
                     const { data } = await queryFulfilled;
 
-                    dispatch(setCurrentGroup({group: data}));
+                    dispatch(setCurrentGroup({group: data?.data}));
 
                 } catch ({error}) {
                     dispatch(setMessage({type: "error", message: error?.data?.message}));
@@ -42,8 +54,24 @@ export const groupApi = createApi({
             },
         }),
         getTontinerGroupes: builder.query({
-            query: ({id}) =>({
-                url: `get-groupes/${id}`,
+            query: ({id, limit, search, start_date, end_date}) =>({
+                url: `get-groupes/${id}?limit=${limit}&search=${search}&start_date=${start_date}&end_date=${end_date}`,
+            }),
+            providesTags: ['Groupes'],
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    console.log("getTontinerGroupes")
+                    const { data } = await queryFulfilled;
+
+                } catch ({error}) {
+                    console.log("getTontinerGroupes", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
+        getNextTontinerGroupes: builder.query({
+            query: ({id, limit, search, start_date, end_date, page}) =>({
+                url: `get-groupes/${id}?limit=${limit}&search=${search}&start_date=${start_date}&end_date=${end_date}&page=${page}`,
             }),
             providesTags: ['Groupes'],
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -59,13 +87,14 @@ export const groupApi = createApi({
         }),
         getTontinerGroupDetail: builder.query({
             query: ({id}) =>({
-                url: `get-groupe/${id}`,
+                url: `get-groupe/${id}?with_member=${true}`,
             }),
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
                 try {
 
-                    console.log("getTontinerGroupDetail")
                     const { data } = await queryFulfilled;
+
+                    console.log("getTontinerGroupDetail", data)
 
                     dispatch(setCurrentGroup({group: data}));
 
@@ -89,14 +118,14 @@ export const groupApi = createApi({
 
                     dispatch(setMessage({type: "success", message: "Groupe crée avec succès"}));
 
-                } catch ({error}) {
+                } catch (error) {
                     dispatch(setMessage({type: "error", message: error?.data?.message}));
                 }
             },
         }),
         associateGroup: builder.mutation({
             query: (data) => ({
-                url: "associateCarte",
+                url: "add-user-in-groupe",
                 method: "POST",
                 body: data
             }),
@@ -105,7 +134,7 @@ export const groupApi = createApi({
                     console.log("Associate")
                     const data = await queryFulfilled;
 
-                    dispatch(setMessage({type: "success", message: "Association envoyée avec succès"}));
+                    dispatch(setMessage({type: "success", message: "Utilisateur ajouter avec succès"}));
 
                 } catch ({error}) {
                     console.log("Associate error", error)
@@ -113,9 +142,9 @@ export const groupApi = createApi({
                 }
             },
         }),
-        validateAssociate: builder.mutation({
+        validateGroupAssociate: builder.mutation({
             query: (data) => ({
-                url: "setAssociateCarteUserTontinierStatus/"+data.id,
+                url: "validate-reject-invitation/"+data.id,
                 method: "PUT",
                 body: data
             }),
@@ -138,11 +167,12 @@ export const groupApi = createApi({
             }),
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
                 try {
-                    const {data} = await queryFulfilled;
+                    const data = await queryFulfilled;
 
                     dispatch(setMessage({type: "success", message: "Carte mise à jour avec succès"}));
 
-                } catch ({error}) {
+                } catch (error) {
+                    console.log("updateGroup error", error)
                     dispatch(setMessage({type: "error", message: error?.data?.message}));
                 }
             },
@@ -180,17 +210,39 @@ export const groupApi = createApi({
                 }
             },
         }),
+        startGroupTontine: builder.mutation({
+            query: (data) => ({
+                url: `set-groupe-status/${data.id}`,
+                method: "PUT",
+                body: data
+            }),
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const data = await queryFulfilled;
+
+                    dispatch(setMessage({type: "success", message: "Tontiner démarrer avec succès"}));
+
+                } catch ({error}) {
+                    console.log("startGroupTontine error", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
     }),
 });
 
 export const {
     useGetGroupesQuery,
+    useGetNextGroupesQuery,
     useGetAssociateGroupDetailQuery,
     useGetTontinerGroupesQuery,
+    useGetNextTontinerGroupesQuery,
     useGetTontinerGroupDetailQuery,
     useCreateGroupMutation,
     useAssociateGroupMutation,
     useUpdateGroupMutation,
     useDeleteGroupMutation,
     useGetRulesQuery,
+    useStartGroupTontineMutation,
+    useValidateGroupAssociateMutation
 } = groupApi;

@@ -30,13 +30,14 @@ function useProtectedRoute(loading) {
     useEffect(() => {
         const inAuthGroup = segments[0] === "(auth)";
         const inAppGroup = segments[0] === "(tabs)";
+        const inSettingGroup = segments[0] === "setting";
 
 
         if(!rootNavigationState?.key) return;
 
         if (!inAuthGroup && !accessToken) {
             router.replace("/login");
-        } else if (accessToken && !inAppGroup) {
+        } else if (accessToken && !inAppGroup && !inSettingGroup) {
             router.replace("/tontine");
             // const pushAction = navigation.navigate({
             //     routeName: "/tontine/",
@@ -52,6 +53,7 @@ function useProtectedRoute(loading) {
 export function AuthProvider(props) {
 
     const [showToast, setShowToast] = useState(false)
+    const [showSplash, setShowSplash] = useState(true)
     const [isLoading, setIsLoading] = useState(true)
     const type = useAppSelector((state) => state.alert.type);
     const message = useAppSelector((state) => state.alert.message);
@@ -77,6 +79,14 @@ export function AuthProvider(props) {
             color: appTheme.COLORS.ERROR
         }
     }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowSplash(false)
+        }, 10000);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
 
@@ -112,8 +122,9 @@ export function AuthProvider(props) {
             value={null}
         >
             <>
-                {props.children}
-                { type && type !== '' &&
+                {showSplash && <Splash />}
+                {!showSplash && props.children}
+                { type && type !== '' && message != '' &&
                     <Toast
                         style={{ marginHorizontal: 10, borderRadius: 10, backgroundColor: toastIcon[type].color }}
                         isShow={showToast}

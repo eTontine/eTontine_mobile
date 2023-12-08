@@ -12,15 +12,31 @@ export const cardApi = createApi({
     tagTypes: ['Cards'],
     endpoints: (builder) => ({
         getCards: builder.query({
-            query: ({tontinier,search,page, user, limit}) =>({
-                url: `getAssociateCartes?tontinier=${tontinier}&user=${user}&limit=${limit}&page=${page}`,
+            query: ({tontinier,user, limit, search}) =>({
+                url: `getAssociateCartes?tontinier=${tontinier}&user=${user}&limit=${limit}&search=${search}`,
             }),
             providesTags: ['Cards'],
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
+                    console.log("getCards", data)
                 } catch ({error}) {
-                    console.log("error", error)
+                    console.log("getCards error", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
+        getNextCards: builder.query({
+            query: ({tontinier,search,page, user, limit}) =>({
+                url: `getAssociateCartes?tontinier=${tontinier}&user=${user}&limit=${limit}&page=${page}&search=${search}`,
+            }),
+            providesTags: ['Cards'],
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    console.log("getNextCards", data)
+                } catch ({error}) {
+                    console.log("getNextCards error", error)
                     dispatch(setMessage({type: "error", message: error?.data?.message}));
                 }
             },
@@ -41,8 +57,23 @@ export const cardApi = createApi({
             },
         }),
         getTontinerCards: builder.query({
-            query: ({id}) =>({
-                url: `get-cartes/${id}`,
+            query: ({id, limit, search, start_date, end_date}) =>({
+                url: `get-cartes/${id}?search=${search}&start_date=${start_date}&end_date=${end_date}`,
+            }),
+            providesTags: ['Cards'],
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    console.log('getTontinerCards', data)
+                } catch ({error}) {
+                    console.log('getTontinerCards error', error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
+        getNextTontinerCards: builder.query({
+            query: ({id, limit, search, start_date, end_date, page}) =>({
+                url: `get-cartes/${id}?limit=${limit}&search=${search}&start_date=${start_date}&end_date=${end_date}&page=${page}`,
             }),
             providesTags: ['Cards'],
             async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -142,6 +173,42 @@ export const cardApi = createApi({
                 }
             },
         }),
+        makeCashOutRequest: builder.mutation({
+            query: (data) => ({
+                url: "make-carte-collect-request",
+                method: "POST",
+                body: data
+            }),
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const data = await queryFulfilled;
+
+                    dispatch(setMessage({type: "success", message: "Demande de collecte envoyé avec succès et en attente de validation"}));
+
+                } catch ({error}) {
+                    console.log("makeCashOutRequest", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
+        validateCashOutRequest: builder.mutation({
+            query: (data) => ({
+                url: "validate-carte-collect-request/"+data.id,
+                method: "PUT",
+                body: data
+            }),
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const data = await queryFulfilled;
+
+                    dispatch(setMessage({type: "success", message: "Retrait Valider avec succès"}));
+
+                } catch ({error}) {
+                    console.log("makeCashOutRequest", error)
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
         updateCard: builder.mutation({
             query: (data) => ({
                 url: `update-carte/${data.id}`,
@@ -182,13 +249,17 @@ export const cardApi = createApi({
 
 export const {
     useGetCardsQuery,
+    useGetNextCardsQuery,
     useGetAssociateCardDetailQuery,
     useGetTontinerCardsQuery,
+    useGetNextTontinerCardsQuery,
     useGetTontinerCardDetailQuery,
     useCreateCardMutation,
     useAssociateCardMutation,
     useValidateAssociateMutation,
     useMakePaymentMutation,
+    useMakeCashOutRequestMutation,
+    useValidateCashOutRequestMutation,
     useUpdateCardMutation,
     useDeleteCardMutation
 } = cardApi;

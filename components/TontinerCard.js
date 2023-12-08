@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, TouchableWithoutFeedback, Image, Dimensions} from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 import {appTheme} from "../constants";
-import {Button} from "./index";
+import Button from "./Button";
 
 const {width} = Dimensions.get('screen')
 
@@ -10,32 +10,30 @@ const JTontinerCard = ({ onPress, item, style, ctaColor }) => {
 
     const cardContainer = [styles.card, styles.shadow, style];
   return (
-      <TouchableWithoutFeedback onPress={onPress}>
-          <Block flex space={"between"} style={cardContainer}>
-              <Block flex row space={"between"}>
-                  <Block>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.name}</Text>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.amount}</Text>
-                  </Block>
-                  <Block right>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.gain}</Text>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.number_day}</Text>
-                  </Block>
+      <Block flex space={"between"} style={cardContainer}>
+          <Block flex row space={"between"}>
+              <Block>
+                  <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.name}</Text>
+                  <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.amount}</Text>
               </Block>
-              <Block center>
-                  <Button
-                      small
-                      onPress={onPress}
-                      color="white"
-                      style={{ paddingHorizontal: 5, paddingVertical: 7 }}
-                  >
-                      <Text bold size={10} color={appTheme.COLORS.SECONDARY}>
-                          Vendre({item?.sale_price})
-                      </Text>
-                  </Button>
+              <Block right>
+                  <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.gain}</Text>
+                  <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 5, marginHorizontal: 5 }}>{item?.number_day}</Text>
               </Block>
           </Block>
-      </TouchableWithoutFeedback>
+          <Block center>
+              <Button
+                  small
+                  onPress={onPress}
+                  color="white"
+                  style={{ paddingHorizontal: 5, paddingVertical: 7 }}
+              >
+                  <Text bold size={10} color={appTheme.COLORS.SECONDARY}>
+                      Vendre({item?.sale_price})
+                  </Text>
+              </Button>
+          </Block>
+      </Block>
   );
 }
 

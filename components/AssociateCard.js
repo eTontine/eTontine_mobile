@@ -25,10 +25,10 @@ const JAssociateCard = ({ onPress, item, style }) => {
           <Block flex space={"between"} style={cardContainer}>
               <Block flex row space={"between"}>
                   <Block>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.carte?.name}</Text>
+                      <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.carte?.name}</Text>
                   </Block>
                   <Block right>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
+                      <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
                          Taxe: <Text> {item?.carte?.gain} </Text>
                       </Text>
                   </Block>
@@ -36,9 +36,8 @@ const JAssociateCard = ({ onPress, item, style }) => {
               <Block flex row center>
                   <Block>
                       <Text
-                          color={appTheme.COLORS.WHITE}
                           size={12}
-                          bold style={{ marginVertical: 10, marginHorizontal: 5 }}
+                          bold style={{ marginVertical: 10, marginHorizontal: 5, color: appTheme.COLORS[cardStatus()?.color] }}
                       >
                           {cardStatus()?.name}
                       </Text>
@@ -46,12 +45,12 @@ const JAssociateCard = ({ onPress, item, style }) => {
               </Block>
               <Block flex row space={"between"}>
                   <Block>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
+                      <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
                           {item?.carte?.amount}<Text>/Tour</Text>
                       </Text>
                   </Block>
                   <Block right>
-                      <Text color={appTheme.COLORS.WHITE} size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.carte?.number_day}</Text>
+                      <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.carte?.number_day}</Text>
                   </Block>
               </Block>
           </Block>
@@ -61,7 +60,7 @@ const JAssociateCard = ({ onPress, item, style }) => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: appTheme.COLORS.SECONDARY,
+        backgroundColor: appTheme.COLORS.WHITE,
         marginVertical: theme.SIZES.BASE,
         borderWidth: 0,
         minHeight: 114,
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 4,
         shadowOpacity: 0.1,
-        elevation: 2,
+        elevation: 1,
     },
 });
 

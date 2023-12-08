@@ -31,7 +31,7 @@ export const Splash = () => {
                 source={appImages.LoginBg}
                 style={{ height, width, zIndex: 1 }}
             >
-                <Block flex middle>
+                <Block flex center middle>
                     <Image source={appImages.LogoOnboarding} style={styles.logo} />
                     {/*<ActivityIndicator size={"large"} color={appTheme.COLORS.SECONDARY}/>*/}
                 </Block>
@@ -45,9 +45,8 @@ const styles = StyleSheet.create({
         backgroundColor: theme.COLORS.BLACK
     },
     logo: {
-        width: 80,
-        height: 80,
+        width: 150,
+        height: 150,
         zIndex: 2,
-        marginBottom: height / 4
     }
 });

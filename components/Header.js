@@ -41,9 +41,20 @@ const BasketButton = ({isWhite, style, navigation}) => (
 const ProfileButton = ({isWhite, style, onPress}) => (
     <TouchableOpacity style={[styles.button, style]} onPress={() => console.log("Profile button presse")}>
         <Icon
-            family="AntDesign"
+            family="MaterialIcons"
             size={16}
-            name="profile"
+            name="swap-vert"
+            color={appTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
+        />
+    </TouchableOpacity>
+);
+
+const SettingButton = ({isWhite, style, onPress}) => (
+    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
+        <Icon
+            family="MaterialIcons"
+            size={16}
+            name="swap-vert"
             color={appTheme.COLORS[isWhite ? 'WHITE' : 'ICON']}
         />
     </TouchableOpacity>
@@ -92,7 +103,7 @@ const ReadyToUseDate = ({name, active, onPress}) => {
     )
 }
 
-const Header = ({ white, title, transparent, navigation, back, bgColor, iconColor, titleColor, optionLeft, optionRight, tabs, tabIndex, search, options, props }) => {
+const Header = ({ white, title, transparent, navigation, back, bgColor, iconColor, titleColor,  tabs, tabIndex, search, searchText, setSearchText, handleSearch, filterOptions, filter, setFilter, options, props }) => {
 
     const router = useRouter()
     const noShadow = [""].includes(title);
@@ -124,7 +135,9 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
                     color="black"
                     placeholder="Rechercher ..."
                     placeholderTextColor={'#8898AA'}
-                    onFocus={() => console.log("On focus nav input")}
+                    onSubmitEditing={handleSearch}
+                    onChangeText={setSearchText}
+                    search={searchText}
                     iconContent={
                         <Icon
                             size={14}
@@ -150,9 +163,10 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
 
         switch (title) {
 
-            case 'Tontine':
+            case 'E-Tontine':
                 return ([
-                    <FilterButton key='filter-tontine' onPress={toggleFilterModal} isWhite={white} />,
+                    // <FilterButton key='filter-tontine' onPress={toggleFilterModal} isWhite={white} />,
+                    <SettingButton key={'setting-tontine'} onPress={() => router.push('/tontine/request')} isWhite={white} />,
                     <NotificationButton key='notification-Tontine' navigation={navigation} isWhite={white} />,
                 ]);
             default:
@@ -177,7 +191,7 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
     const filterModal = () => {
         return (
             <ModalSheet visible={showFilter} hide={() => setShowFilter(false)}>
-                <Block style={{ paddingVertical: 15, paddingHorizontal: 5 }}>
+                <Block style={{ paddingVertical: 15, paddingHorizontal: 15 }}>
                     <Text color={appTheme.COLORS.SECONDARY}  size={18}> Filtre </Text>
 
                     <YearPicker
@@ -187,11 +201,9 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
 
                     <Block row center style={{ marginHorizontal: 14,  }} >
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                            <ReadyToUseDate name={"ONE"}  />
-                            <ReadyToUseDate name={"TWO"}  />
-                            <ReadyToUseDate name={"THREE"}  />
-                            <ReadyToUseDate name={"FOUR"}  />
-                            <ReadyToUseDate name={"FIVE"}  />
+                            {filterOptions?.map((item, index) => (
+                                <ReadyToUseDate key={index} name={item.name}  />
+                            ))}
                         </ScrollView>
                     </Block>
 
@@ -231,7 +243,7 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
                 style={navbarStyles}
                 transparent={transparent}
                 right={renderRight()}
-                rightStyle={{ alignItems: 'center' }}
+                rightStyle={{ alignItems: 'flex-end' }}
                 left={ tabs || back &&
                     <Icon
                         name={back ? 'arrow-back' : "menu"} family="Ionicons"
@@ -241,7 +253,7 @@ const Header = ({ white, title, transparent, navigation, back, bgColor, iconColo
                     />
 
                 }
-                leftStyle={{ paddingVertical: 12, flex: 0.2 }}
+                leftStyle={{ paddingVertical: 12, flex: tabs || back ? 0.2 : 0 }}
                 titleStyle={[
                     styles.title,
                     { color: appTheme.COLORS[white ? 'WHITE' : 'HEADER'] },
@@ -262,8 +274,9 @@ const styles = StyleSheet.create({
     },
     title: {
         width: '100%',
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
+        textTransform: "uppercase"
     },
     navbar: {
         paddingVertical: 0,

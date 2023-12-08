@@ -1,4 +1,4 @@
-import {Dimensions, ScrollView, StyleSheet} from "react-native";
+import {ActivityIndicator, Dimensions, ScrollView, StyleSheet} from "react-native";
 import {Block, Text, theme} from "galio-framework";
 import {appTheme} from "../../../constants";
 
@@ -6,6 +6,10 @@ import transactions from "../../../constants/transactions";
 import Stack from "expo-router/src/layouts/Stack";
 import Header from "../../../components/Header";
 import {DateInput} from "../../../components/DateComponent";
+import {useAppSelector} from "../../../utils/hooks";
+import {useGetHistoricsQuery} from "../../../store/features/historic/historic.services";
+import {useEffect, useState} from "react";
+import {formatDateYYYYMMDD} from "../../../utils/date";
 
 const { width } = Dimensions.get('screen');
 
@@ -35,22 +39,46 @@ const DateSelector = () => {
     );
 }
 
-const Transaction = ({ item}) => {
-    const style = item.status && item.status == "OUT" ? styles.out : styles.in
-    const amount = item.status && item.status == "OUT" ? "-"+item.amount : "+"+item.amount
+const Transaction = ({item, userPhone}) => {
+    const type = item.receiver_phone && item.receiver_phone == userPhone ? 'in' : 'out'
+    const style = item.receiver_phone && item.receiver_phone == userPhone ? styles.in : styles.out
     return (
-        <Block flex row center space="between" style={styles.card}>
-            <Block flex>
-                {item.status == "IN" && <InText name={item.name} /> }
-                {item.status == "OUT" && <OutText name={item.name} /> }
-                <Text color={appTheme.COLORS.MUTED}> {item.date} </Text>
+        <Block card style={{ elevation: 1, margin: 5, padding: 10 }}>
+            <Block row flex space={"between"}>
+                <Block>
+                    <Text bold size={9}> {item?.payment_date} </Text>
+                    <Text bold size={9}> {item?.type_de_tontine} ({item?.status}) </Text>
+                </Block>
+                <Text style={style}> {type == 'in' ? '+' : '-'} {item.amount} </Text>
             </Block>
-            <Text style={[style]}> { amount } </Text>
+            <Block style={{ borderStartWidth: 2, borderStartColor: appTheme.COLORS.BORDER, marginStart: 5, marginVertical: 5 }}>
+                <Block row flex space={"between"}>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> Txn Id: </Text>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> {item?.id} </Text>
+                </Block>
+                <Block row flex space={"between"}>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> Type de transaction:  </Text>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> {item?.type_transaction} </Text>
+                </Block>
+                <Block row flex space={"between"}>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> De: </Text>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> {item?.sender_phone} </Text>
+                </Block>
+                <Block row flex space={"between"}>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> A: </Text>
+                    <Text color={appTheme.COLORS.MUTED} bold size={9}> {item?.receiver_phone} </Text>
+                </Block>
+            </Block>
         </Block>
     );
 }
 
 const HistoricScreen = () => {
+    const user = useAppSelector((state) => state.user.currentUser);
+    const [startDate, setStartDate] = useState(formatDateYYYYMMDD(new Date('2023-01-01')))
+    const [endDate, setEndDate] = useState(formatDateYYYYMMDD(new Date()))
+    const {isFetching:loading, data: transactionsHistory} = useGetHistoricsQuery({userId: user?.id, start: startDate, end: endDate}, {skip: !user})
+
     return (
         <Block flex>
             <Stack.Screen options={{
@@ -60,23 +88,26 @@ const HistoricScreen = () => {
                 <Block card flex style={{ borderRadius: 20, backgroundColor: "#fff", marginHorizontal: 30, marginVertical: 10 }}>
                     <Block row space="between" style={{ padding: 15 }}>
                         <Block flex middle center >
-                            <DateInput label={"De"} date={new Date()} />
+                            <DateInput label={"De"} date={new Date('2023-01-01')} onSelect={setStartDate} />
                         </Block>
                         <Block flex middle center style={{ borderStartWidth: 1.5, borderStartColor: appTheme.COLORS.SECONDARY }}>
-                            <DateInput label={"A"} date={new Date()} />
+                            <DateInput label={"A"} date={new Date()} onSelect={setEndDate} />
                         </Block>
                     </Block>
                 </Block>
             </Block>
-           <Block flex style={{ marginTop: 10 }}>
-               <ScrollView
-                   showsVerticalScrollIndicator={false}
-               >
-                   <Block flex>
-                       { transactions.map((transaction, index) => <Transaction key={index} item={transaction} /> ) }
-                   </Block>
-               </ScrollView>
-           </Block>
+            {loading && <ActivityIndicator color={appTheme.COLORS.SECONDARY} />}
+            {!loading &&
+                <Block flex style={{ marginTop: 10 }}>
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                    >
+                        <Block flex>
+                            { transactionsHistory && transactionsHistory.length && transactionsHistory.map((transaction, index) => <Transaction key={index} item={transaction} userPhone={user?.phone} /> ) }
+                        </Block>
+                    </ScrollView>
+                </Block>
+            }
         </Block>
     );
 }

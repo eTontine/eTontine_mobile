@@ -21,10 +21,22 @@ export const coreApi = createApi({
                 }
             },
         }),
+        getStats: builder.query({
+            query: () => 'get-user-cartes-groupes',
+            async onQueryStarted(args, { dispatch, queryFulfilled }) {
+                try {
+                    const data  = await queryFulfilled;
+
+                } catch ({error}) {
+                    dispatch(setMessage({type: "error", message: error?.data?.message}));
+                }
+            },
+        }),
     }),
 });
 
 export const {
-    useGetCountryQuery
+    useGetCountryQuery,
+    useGetStatsQuery
 } = coreApi;
 

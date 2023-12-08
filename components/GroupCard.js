@@ -1,30 +1,42 @@
 import React from 'react';
-import { StyleSheet, TouchableWithoutFeedback, Image } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
-import {appTheme} from "../constants";
 import {useRouter} from "expo-router";
-import Icon from "./Icon";
-import {Button} from "./index";
+import {CardStatus, InvitationStatus} from "../constants/status";
 
-const JGroupCard = ({  item, style }) => {
+const JGroupCard = ({  item, style, onPress }) => {
 
     const router = useRouter()
 
+    const groupStatus = () => {
+        const invitationStatus = item?.invitation_status
+        const tranStatus = item?.transaction_status
+        const status = item?.status
+        if(invitationStatus === InvitationStatus.PENDING.value) {
+            return InvitationStatus.PENDING
+        }else if (invitationStatus === InvitationStatus.ACCEPTED.value && status === CardStatus.NOT_COLLECTED.value) {
+            return CardStatus.NOT_COLLECTED
+        } else {
+            return CardStatus.NOT_COLLECTED
+        }
+    }
+
     const navigateTo = () => {
-        router.push({ pathname: '/tontine/group/[id]', params: { id: item.id } })
+        console.log("card press", item)
+        router.push({ pathname: '/group/show/[id]', params: { id: item.id, name: item?.groupe?.name } })
     }
     const cardContainer = [styles.card, styles.shadow, style]
 
     return (
-        <TouchableWithoutFeedback onPress={navigateTo}>
+        <TouchableWithoutFeedback onPress={() => navigateTo()}>
             <Block flex space={"between"} style={cardContainer}>
                 <Block flex row space={"between"}>
                     <Block>
-                        <Text  size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.name}</Text>
+                        <Text  size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>{item?.groupe?.name}</Text>
                     </Block>
                     <Block right>
                         <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
-                            Taxe: <Text> {item?.gain} </Text>
+                            Taxe: <Text> {item?.groupe?.gain} </Text>
                         </Text>
                     </Block>
                 </Block>
@@ -34,22 +46,35 @@ const JGroupCard = ({  item, style }) => {
                             size={12}
                             bold style={{ marginVertical: 10, marginHorizontal: 5 }}
                         >
-                            {item?.status == 'INSCRIPTION' ? "Phase d'inscription" : item?.status}
+                            {groupStatus()?.name}
                         </Text>
                     </Block>
                 </Block>
                 <Block flex row space={"between"}>
                     <Block>
                         <Text  size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
-                            {item?.amount}
+                            {item?.groupe?.amount}
                         </Text>
                     </Block>
                     <Block right>
                         <Text size={12} bold style={{ marginVertical: 10, marginHorizontal: 5 }}>
-                            {item?.day_contribution}{item?.time_contribution}{item?.contribution_period}
+                            {item?.groupe?.day_contribution}{item?.groupe?.time_contribution}{item?.groupe?.contribution_period}
                         </Text>
                     </Block>
                 </Block>
+                {/*<Block row center>*/}
+                {/*    <Button*/}
+                {/*        small*/}
+                {/*        onPress={() => navigateTo()}*/}
+                {/*        color="secondary"*/}
+                {/*        style={{ paddingHorizontal: 5, paddingVertical: 7 }}*/}
+                {/*    >*/}
+                {/*        <Text bold size={10} color={appTheme.COLORS.WHITE}>*/}
+                {/*            Voir*/}
+                {/*        </Text>*/}
+                {/*    </Button>*/}
+
+                {/*</Block>*/}
             </Block>
         </TouchableWithoutFeedback>
     );
@@ -57,7 +82,7 @@ const JGroupCard = ({  item, style }) => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: appTheme.COLORS.SECONDARY,
+        backgroundColor: "#fff",
         padding: 5,
         marginVertical: theme.SIZES.BASE,
         borderWidth: 0,

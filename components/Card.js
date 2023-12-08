@@ -1,10 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableWithoutFeedback, Image } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 import {appTheme} from "../constants";
-import {useRouter} from "expo-router";
-import Icon from "./Icon";
-import {Button} from "./index";
+import Button from "./Button";
 
 const JCard = ({ onPress, item, style, ctaColor }) => {
 

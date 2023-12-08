@@ -1,9 +1,10 @@
 import React from 'react';
 import { Tabs } from "expo-router";
-import {Image, Pressable, Text, View} from "react-native";
+import {Dimensions, Image, Pressable, Text, View} from "react-native";
 import { Icon } from '../../components'
 import { appTheme } from '../../constants'
 
+const { width } = Dimensions.get('screen')
 
 function MyTabBar({ state, descriptors, navigation }) {
   return (
@@ -71,7 +72,7 @@ function MyTabBar({ state, descriptors, navigation }) {
                       <View 
                         style={{elevation:3,
                           borderRadius: 56,
-                          width:50,height:50,
+                          width:55,height:55,
                           padding:10,alignItems: "center",
                           justifyContent: "center",
                           backgroundColor: isFocused ? appTheme.COLORS.SECONDARY : appTheme.COLORS.SECONDARY
@@ -99,10 +100,12 @@ function MyTabBar({ state, descriptors, navigation }) {
                       style={{
                           flex: 1,
                           justifyContent: 'center',
-                          paddingVertical: 10,
+                          paddingVertical: 7,
                           alignItems:"center",
                           alignSelf: "center",
                           backgroundColor: 'transparent',
+                          paddingRight: route.name == "card" ? width * 0.10 : 0,
+                          paddingLeft: route.name == "group" ? width * 0.10 : 0
                       }}
                   >
 
@@ -113,8 +116,7 @@ function MyTabBar({ state, descriptors, navigation }) {
                                 justifyContent: "center",
                                 alignSelf: "center",
                                 backgroundColor: 'transparent',
-                                width: 30,
-                                aspectRatio: 2/2,
+                                aspectRatio: 3/2,
                                 borderRadius: 5,
                             }}
                       >
@@ -127,6 +129,7 @@ function MyTabBar({ state, descriptors, navigation }) {
                                   justifyContent:"center",
                                   alignItems:"center"}}
                               color={isFocused ? appTheme.COLORS.PRIMARY : appTheme.COLORS.WHITE} size={30} />
+                          <Text style={{ color: appTheme.COLORS.WHITE, fontSize: 8, textAlign: "center" }}> {options.title} </Text>
                       </View>
                   </Pressable>
               );
@@ -152,11 +155,19 @@ export default function AppLayout() {
       <Tabs.Screen
         name="historic"
         options={{
-            title: "Transaction",
-            family: "MaterialIcons",
-            icon: "history",
+            title: "Transactions",
+            family: "AntDesign",
+            icon: "swap",
         }}
       />
+        <Tabs.Screen
+            name="card"
+            options={{
+                title: "Cartes",
+                family: "Entypo",
+                icon: "v-card",
+            }}
+        />
       <Tabs.Screen
         name="tontine"
         options={{
@@ -165,10 +176,18 @@ export default function AppLayout() {
             icon: "pig",
         }}
       />
+        <Tabs.Screen
+            name="group"
+            options={{
+                title: "Groupes",
+                family: "FontAwesome",
+                icon: "group",
+            }}
+        />
       <Tabs.Screen
         name="setting"
         options={{
-            title: "Paramètre",
+            title: "Paramètres",
             family: "AntDesign",
             icon: "setting",
         }}

@@ -2,10 +2,9 @@ import {ActivityIndicator, Alert, Dimensions, Pressable, ScrollView, StyleSheet}
 import {Block, Text} from "galio-framework";
 import {useAppSelector} from "../../../utils/hooks";
 import {appTheme} from "../../../constants";
-import {Button, Input} from "../../../components";
+import {Button, Input, ModalSheet} from "../../../components";
 import Header from "../../../components/Header";
 import Stack from "expo-router/src/layouts/Stack";
-import {ModalSheet} from "../../../components/Modal";
 import React, {useEffect, useState} from "react";
 import {formatDateToString} from "../../../utils/date";
 import {Formik} from "formik";

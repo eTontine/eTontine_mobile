@@ -2,16 +2,16 @@ import React, {useEffect} from "react";
 import {Dimensions, ScrollView, KeyboardAvoidingView} from "react-native";
 import {Formik} from "formik";
 import {Block, Text} from "galio-framework";
-import {appTheme} from "../../../../../../constants";
-import {Button, Input} from "../../../../../../components";
+import {appTheme} from "../../../constants";
+import {Button, Input} from "../../../components";
 import Stack from "expo-router/src/layouts/Stack";
-import Header from "../../../../../../components/Header";
+import Header from "../../../components/Header";
 import {
     useCreateCardMutation,
     useGetTontinerCardDetailQuery,
     useUpdateCardMutation
-} from "../../../../../../store/features/card/card.services";
-import {useAppSelector} from "../../../../../../utils/hooks";
+} from "../../../store/features/card/card.services";
+import {useAppSelector} from "../../../utils/hooks";
 import {useLocalSearchParams, useRouter} from "expo-router";
 
 const { width, height } = Dimensions.get('screen')

@@ -1,36 +1,43 @@
 import {useEffect, useState} from "react";
-import {useGetCardsQuery, useGetTontinerCardsQuery} from "../store/features/card/card.services";
+import {
+    useGetCardsQuery,
+    useGetNextCardsQuery,
+    useGetNextTontinerCardsQuery,
+    useGetTontinerCardsQuery
+} from "../store/features/card/card.services";
 
 
 
-export const useCards = ({tontinier='', search ='', page, user, isTontiner}) => {
+export const useCards = ({tontinier='', search ='', page, user, isTontiner, start_date, end_date}) => {
 
     const limit = 10
     const [tontinerCards, setTontinerCards] = useState([])
     const [associateCards, setAssociateCards] = useState([])
-    const [pages, setPages] = useState(0)
+    const [totalPage, setTotalPage] = useState(0)
     const [loading, setLoading] = useState(false)
+
+    console.log("associatePage", page)
 
     const {isFetching: loadingCards, data: cardData} = useGetCardsQuery({tontinier,search, user, limit}, {
         refetchOnMountOrArgChange: true,
         refetchOnReconnect: true,
+        skip: !tontinier && !user
     })
 
-    const {isFetching: loadingNextCards, data: cardNextData} = useGetCardsQuery({tontinier,search, page, user, limit}, {
-        skip: page <= 1 || !user
+    const {isFetching: loadingNextCards, data: cardNextData} = useGetNextCardsQuery({tontinier,search, page, user, limit}, {
+        skip: page <= 1 || !tontinier && !user
     })
 
-    const {isFetching: loadingTontinerCards, data: tontinerCardData} = useGetTontinerCardsQuery({id:user}, {
+    const {isFetching: loadingTontinerCards, data: tontinerCardData} = useGetTontinerCardsQuery({id:tontinier, search, limit, start_date, end_date}, {
         refetchOnMountOrArgChange: true,
         refetchOnReconnect: true,
+        skip: !isTontiner || !tontinier
     })
-
-    const {isFetching: loadingNextTontinerCards, data: tontinerNextCardData} = useGetTontinerCardsQuery({id:user}, {skip: !isTontiner || !user})
 
     useEffect(() => {
         setLoading(loadingCards || loadingNextCards
-            || loadingTontinerCards || loadingNextTontinerCards)
-    }, [loadingCards, loadingNextCards, loadingTontinerCards, loadingNextTontinerCards])
+            || loadingTontinerCards)
+    }, [loadingCards, loadingNextCards, loadingTontinerCards])
 
     useEffect(() => {
         setTontinerCards(tontinerCardData?.data)
@@ -38,19 +45,16 @@ export const useCards = ({tontinier='', search ='', page, user, isTontiner}) => 
 
     useEffect(() => {
         setAssociateCards(cardData?.data)
+        console.log(associateCards)
+        setTotalPage(cardData?.total_pages)
     }, [cardData]);
 
-    // useEffect(() => {
-    //     if (tontinerNextCardData && tontinerNextCardData.length > 0) {
-    //         setTontinerCards([...tontinerCards, ...tontinerNextCardData])
-    //     }
-    // }, [tontinerNextCardData]);
-    //
-    // useEffect(() => {
-    //     if (cardNextData && cardNextData.length > 0) {
-    //         setAssociateCards([...associateCards, ...cardNextData])
-    //     }
-    // }, [cardNextData]);
+    useEffect(() => {
+        if (cardNextData && cardNextData?.data?.length > 0) {
+            console.log("add")
+            setAssociateCards([...associateCards, ...cardNextData.data])
+        }
+    }, [cardNextData]);
 
     const resetCards = () => {
         setTontinerCards([]);
@@ -58,5 +62,5 @@ export const useCards = ({tontinier='', search ='', page, user, isTontiner}) => 
     }
 
 
-    return { loading, pages, tontinerCards, associateCards, resetCards}
+    return { loading, totalPage, tontinerCards, associateCards, resetCards}
 }

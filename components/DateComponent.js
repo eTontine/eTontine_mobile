@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Pressable} from 'react-native';
-import {formatDate, formatDateToString} from "../utils/date";
+import {dateFormater, formatDate, formatDateToString, formatDateYYYYMMDD} from "../utils/date";
 import CalendarPicker from "react-native-calendar-picker";
 import {appTheme} from "../constants";
 import Modal from "react-native-modal";
@@ -48,7 +48,7 @@ export const DateInput = ({label, date, onSelect,title="",description, errorText
 
     const [visible, setVisible] = useState(false)
     const handleDateChange = (date) => {
-        onSelect(date)
+        onSelect(formatDateYYYYMMDD(new Date(date)))
         setVisible(false)
     }
 
